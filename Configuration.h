@@ -121,7 +121,7 @@
 // The following define selects which electronics board you have.
 // Please choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_13_EEB
+  #define MOTHERBOARD BOARD_RAMPS_13_EEF
 #endif
 
 // Optional custom name for your RepStrap or other custom machine
@@ -576,7 +576,7 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false
-#define INVERT_Y_DIR false
+#define INVERT_Y_DIR true
 #define INVERT_Z_DIR true
 
 // @section extruder
@@ -801,7 +801,7 @@
 //
 // G20/G21 Inch mode support
 //
-//#define INCH_MODE_SUPPORT
+#define INCH_MODE_SUPPORT
 
 //
 // M149 Set temperature units support
@@ -836,11 +836,11 @@
 //    P2: The nozzle height will be raised by Z-park amount but never going over
 //        the machine's limit of Z_MAX_POS.
 //
-//#define NOZZLE_PARK_FEATURE
+#define NOZZLE_PARK_FEATURE
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z }
-  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
+  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 5 }
 #endif
 
 //

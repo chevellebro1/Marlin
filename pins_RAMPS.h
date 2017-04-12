@@ -57,11 +57,11 @@
 #ifdef IS_RAMPS_13
   #define SERVO0_PIN        7 // RAMPS_13 // Will conflict with BTN_EN2 on LCD_I2C_VIKI
 #else
-  #define SERVO0_PIN       11
+  #define SERVO0_PIN       -1
 #endif
-#define SERVO1_PIN          6
-#define SERVO2_PIN          5
-#define SERVO3_PIN          4
+#define SERVO1_PIN          -1
+#define SERVO2_PIN          -1
+#define SERVO3_PIN          -1
 
 #define X_MIN_PIN           3
 #ifndef X_MAX_PIN
@@ -95,19 +95,19 @@
 #define E1_DIR_PIN         34
 #define E1_ENABLE_PIN      30
 
-#define SDSS               53
+#define SDSS               -1
 #define LED_PIN            13
 
 // Use the RAMPS 1.4 Analog input 5 on the AUX2 connector
-#define FILWIDTH_PIN        5 // ANALOG NUMBERING
+#define FILWIDTH_PIN        -1 // ANALOG NUMBERING
 
 // define digital pin 4 for the filament runout sensor. Use the RAMPS 1.4 digital input 4 on the servos connector
-#define FIL_RUNOUT_PIN      4
+#define FIL_RUNOUT_PIN      -1
 
-#define PS_ON_PIN          12
+#define PS_ON_PIN          32   // 12v/24v SWITCHING
 #define TEMP_0_PIN         13   // ANALOG NUMBERING
-#define TEMP_1_PIN         12   // ANALOG NUMBERING
-#define TEMP_BED_PIN       14   // ANALOG NUMBERING
+#define TEMP_1_PIN         14   // ANALOG NUMBERING
+#define TEMP_BED_PIN       15   // ANALOG NUMBERING
 
 #if ENABLED(Z_PROBE_SLED)
   #define SLED_PIN           -1
@@ -173,7 +173,7 @@
 #endif
 
 #ifndef FAN_PIN
-  #define FAN_PIN 4      // IO pin. Buffer needed
+  #define FAN_PIN -1      // IO pin. Buffer needed
 #endif
 
 /**
@@ -183,7 +183,7 @@
 #if ENABLED(ULTRA_LCD)
 
   #if ENABLED(REPRAPWORLD_GRAPHICAL_LCD)
-    #define LCD_PINS_RS     49 //CS chip select /SS chip slave select
+    #define LCD_PINS_RS     -1 //CS chip select /SS chip slave select
     #define LCD_PINS_ENABLE 51 //SID (MOSI)
     #define LCD_PINS_D4     52 //SCK (CLK) clock
   #elif ENABLED(NEWPANEL) && ENABLED(PANEL_ONE)
@@ -220,7 +220,7 @@
       #define BTN_EN2 33
       #define BTN_ENC 35
 
-      #define SD_DETECT_PIN 49
+      #define SD_DETECT_PIN -1
       #define KILL_PIN 41
 
       #if ENABLED(BQ_LCD_SMART_CONTROLLER)
@@ -236,7 +236,7 @@
       #define BTN_EN1 47  // reverse if the encoder turns the wrong way.
       #define BTN_EN2 43
       #define BTN_ENC 32
-      #define LCD_SDSS 53
+      #define LCD_SDSS -1
       #define SD_DETECT_PIN -1
       #define KILL_PIN 41
     #elif ENABLED(LCD_I2C_VIKI)
@@ -245,8 +245,8 @@
                           // tells about 40/42.
                           // 22/7 are unused on RAMPS_14. 22 is unused and 7 the SERVO0_PIN on RAMPS_13.
       #define BTN_ENC -1
-      #define LCD_SDSS 53
-      #define SD_DETECT_PIN 49
+      #define LCD_SDSS -1
+      #define SD_DETECT_PIN -1
     #elif ENABLED(VIKI2) || ENABLED(miniVIKI)
       #define BEEPER_PIN       33
 
@@ -259,7 +259,7 @@
       #define BTN_EN2           7
       #define BTN_ENC          39
 
-      #define SDSS             53
+      #define SDSS             -1
       #define SD_DETECT_PIN    -1  // Pin 49 for display sd interface, 72 for easy adapter board
 
       #define KILL_PIN         31
@@ -272,8 +272,8 @@
       #define BTN_EN1 35  // reverse if the encoder turns the wrong way.
       #define BTN_EN2 37
       #define BTN_ENC 31
-      #define SD_DETECT_PIN 49
-      #define LCD_SDSS 53
+      #define SD_DETECT_PIN -1
+      #define LCD_SDSS -1
       #define KILL_PIN 41
       #define BEEPER_PIN 23
       #define DOGLCD_CS 29
@@ -285,7 +285,7 @@
       #define DOGLCD_A0  44
       #define DOGLCD_CS  66
       #define LCD_PIN_BL 65 // backlight LED on A11/D65
-      #define SDSS   53
+      #define SDSS   -1
 
       #define KILL_PIN 64
       // GLCD features
@@ -299,7 +299,7 @@
       #define BTN_EN2 63
       #define BTN_ENC 59
       //not connected to a pin
-      #define SD_DETECT_PIN 49
+      #define SD_DETECT_PIN -1
 
     #else
 
@@ -317,7 +317,7 @@
       #elif ENABLED(PANEL_ONE)
         #define BTN_EN1 59 // AUX2 PIN 3
         #define BTN_EN2 63 // AUX2 PIN 4
-        #define BTN_ENC 49 // AUX3 PIN 7
+        #define BTN_ENC -1 // AUX3 PIN 7
       #else
         #define BTN_EN1 37
         #define BTN_EN2 35
@@ -325,7 +325,7 @@
       #endif
 
       #if ENABLED(G3D_PANEL)
-        #define SD_DETECT_PIN 49
+        #define SD_DETECT_PIN -1
         #define KILL_PIN 41
       #else
         //        #define SD_DETECT_PIN -1  // Ramps doesn't use this
@@ -338,17 +338,17 @@
 
 // SPI for Max6675 or Max31855 Thermocouple
 #if DISABLED(SDSUPPORT)
-  #define MAX6675_SS       66 // Do not use pin 53 if there is even the remote possibility of using Display/SD card
+  #define MAX6675_SS       -1 // Do not use pin 53 if there is even the remote possibility of using Display/SD card
 #else
-  #define MAX6675_SS       66 // Do not use pin 49 as this is tied to the switch inside the SD card socket to detect if there is an SD card present
+  #define MAX6675_SS       -1 // Do not use pin 49 as this is tied to the switch inside the SD card socket to detect if there is an SD card present
 #endif
 
 #define SPINDLE            32
 #define SPINDLE_PWM        44
 
-#define CoolingFan         57
+#define CoolingFan         43
 
-#define LASER_BEAM         58
+#define LASER_BEAM         -1
 
 #define LASER_PWR          63
 
@@ -357,3 +357,5 @@
 
 #define LASER_POS           6
 #define LASER_NEG           4
+
+#define CASE_FAN           45

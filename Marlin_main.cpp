@@ -166,6 +166,7 @@
  * M84  - Disable steppers until next move,
  *        or use S<seconds> to specify an inactivity timeout, after which the steppers will be disabled.  S0 to disable the timeout.
  * M85  - Set inactivity shutdown timer with parameter S<seconds>. To disable set zero (default)
+ * M86  - Case Fans
  * M92  - Set planner.axis_steps_per_mm - same syntax as G92
  * M104 - Set extruder target temp
  * M105 - Read current temp
@@ -856,13 +857,14 @@ void servo_init() {
 void startup()
 {
   mill = 0;
-  digitalWrite(LASER_PWR, LOW);
+  digitalWrite(LASER_PWR, HIGH);
   digitalWrite(LASER_POS, HIGH);
   digitalWrite(LASER_NEG, HIGH);
   digitalWrite(SPINDLE_POS, HIGH);
   digitalWrite(SPINDLE_NEG, HIGH);
-  digitalWrite(LASER_BEAM, LOW);
+  digitalWrite(LASER_BEAM, HIGH);
   analogWrite(CoolingFan, 255);
+  digitalWrite(CASE_FAN, HIGH);
 }
 
 /**
@@ -1019,6 +1021,8 @@ void setup() {
   pinMode(LASER_POS, OUTPUT);
   pinMode(LASER_NEG, OUTPUT);
   pinMode(LASER_PWR, OUTPUT);
+  pinMode(CASE_FAN, OUTPUT);
+  pinMode(EXTRUDER_0_AUTO_FAN_PIN, OUTPUT);
   startup();
 }
 
@@ -5109,6 +5113,7 @@ inline void gcode_M81() {
     LCD_MESSAGEPGM(MACHINE_NAME " " MSG_OFF ".");
     lcd_update();
   #endif
+  digitalWrite(CASE_FAN, HIGH);
 }
 
 
@@ -7273,6 +7278,9 @@ void process_next_command() {
         digitalWrite(LASER_POS, HIGH);
         digitalWrite(LASER_NEG, HIGH);
         digitalWrite(LASER_BEAM, LOW);
+        digitalWrite(SPINDLE_POS, LOW);
+        digitalWrite(SPINDLE_NEG, LOW);
+        digitalWrite(LASER_BEAM, LOW);
         analogWrite(CoolingFan, 255);
       }
       break;
@@ -7435,6 +7443,16 @@ void process_next_command() {
         break;
       case 85: // M85
         gcode_M85();
+        break;
+      case 86: //M86
+        {
+          digitalWrite(CASE_FAN, LOW);
+        }
+        break;
+      case 87: //M87
+        {
+          digitalWrite(CASE_FAN, HIGH);
+        }
         break;
       case 92: // M92: Set the steps-per-unit for one or more axes
         gcode_M92();
