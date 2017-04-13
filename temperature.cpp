@@ -495,6 +495,17 @@ int Temperature::getHeaterPower(int heater) {
 
 #endif // HAS_AUTO_FAN
 
+void Temperature::checkCaseFans() {
+  const int8_t casePin = CASE_FAN;
+  if (current_temperature_case > CASE_TEMP) {
+    digitalWrite(CASE_FAN, LOW);
+  }
+  else (current_temperature_case < CASE_TEMP) {
+    digitalWrite(CASE_FAN, HIGH);
+  }
+}
+
+
 //
 // Temperature Error Handlers
 //
@@ -882,6 +893,23 @@ float Temperature::analog2tempBed(int raw) {
   #endif
 }
 
+float Temperature::analog2tempCase(int raw) {
+  for (i = 1; i < BEDTEMPTABLE_LEN; i++) {
+    if (PGM_RD_W(BEDTEMPTABLE[i][0]) > raw) {
+      celsius  = PGM_RD_W(BEDTEMPTABLE[i - 1][1]) +
+                 (raw - PGM_RD_W(BEDTEMPTABLE[i - 1][0])) *
+                 (float)(PGM_RD_W(BEDTEMPTABLE[i][1]) - PGM_RD_W(BEDTEMPTABLE[i - 1][1])) /
+                 (float)(PGM_RD_W(BEDTEMPTABLE[i][0]) - PGM_RD_W(BEDTEMPTABLE[i - 1][0]));
+      break;
+    }
+  }
+
+  // Overflow: Set to last value in the table
+  if (i == BEDTEMPTABLE_LEN) celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]);
+
+  return celsius;
+}
+
 /**
  * Get the raw values into the actual temperatures.
  * The raw values are created in interrupt context,
@@ -896,6 +924,8 @@ void Temperature::updateTemperaturesFromRawValues() {
     current_temperature[e] = Temperature::analog2temp(current_temperature_raw[e], e);
   }
   current_temperature_bed = Temperature::analog2tempBed(current_temperature_bed_raw);
+  current_temperature_case = Temperature::analog2tempCase(current_temperature_case_raw);
+
   #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
     redundant_temperature = Temperature::analog2temp(redundant_temperature_raw, 1);
   #endif
@@ -1365,6 +1395,7 @@ void Temperature::set_current_temp_raw() {
     #endif
   #endif
   current_temperature_bed_raw = raw_temp_bed_value;
+  current_temperature_bed_raw = raw_temp_case_value;
   temp_meas_ready = true;
 }
 
@@ -1687,8 +1718,16 @@ void Temperature::isr() {
       #if HAS_TEMP_3
         raw_temp_value[3] += ADC;
       #endif
-      temp_state = Prepare_FILWIDTH;
+      temp_state = PrepareTemp_CASE;
       break;
+
+    case PrepareTemp_CASE:
+      START_ADC(CASE_FAN);
+      temp_state = MeasureTemp_CASE;
+      break;
+    case MeasureTemp_CASE;
+      raw_temp_case_value = ADC;
+      temp_state = Prepare_FILWIDTH
 
     case Prepare_FILWIDTH:
       #if ENABLED(FILAMENT_WIDTH_SENSOR)

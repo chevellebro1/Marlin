@@ -55,11 +55,13 @@ class Temperature {
   public:
 
     static float current_temperature[HOTENDS],
-                 current_temperature_bed;
+                 current_temperature_bed,
+                 current_temperature_case;
     static int   current_temperature_raw[HOTENDS],
                  target_temperature[HOTENDS],
                  current_temperature_bed_raw,
-                 target_temperature_bed;
+                 target_temperature_bed,
+                 current_temperature_case_raw;
 
     #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
       static float redundant_temperature;
@@ -289,6 +291,8 @@ class Temperature {
     }
     static float degBed() { return current_temperature_bed; }
 
+    static float degCase() { return current_temperature_case; }
+
     #if ENABLED(SHOW_TEMP_ADC_VALUES)
     static float rawHotendTemp(uint8_t e) {
       #if HOTENDS == 1
@@ -429,6 +433,8 @@ class Temperature {
     #endif
 
     static void checkExtruderAutoFans();
+
+    static void checkCaseFans();
 
     static float get_pid_output(int e);
 
