@@ -359,3 +359,5 @@
 #define LASER_NEG           4
 
 #define CASE_FAN           45
+
+#define LED_STRIP          41

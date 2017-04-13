@@ -166,7 +166,10 @@
  * M84  - Disable steppers until next move,
  *        or use S<seconds> to specify an inactivity timeout, after which the steppers will be disabled.  S0 to disable the timeout.
  * M85  - Set inactivity shutdown timer with parameter S<seconds>. To disable set zero (default)
- * M86  - Case Fans
+ * M86  - Case Fans On
+ * M87  - Case Fans Off
+ * M88  - LED Light On
+ * M89  - LED Light Off
  * M92  - Set planner.axis_steps_per_mm - same syntax as G92
  * M104 - Set extruder target temp
  * M105 - Read current temp
@@ -865,6 +868,7 @@ void startup()
   digitalWrite(LASER_BEAM, HIGH);
   analogWrite(CoolingFan, 255);
   digitalWrite(CASE_FAN, HIGH);
+  digitalWrite(LED_STRIP, HIGH);
 }
 
 /**
@@ -1023,6 +1027,7 @@ void setup() {
   pinMode(LASER_PWR, OUTPUT);
   pinMode(CASE_FAN, OUTPUT);
   pinMode(EXTRUDER_0_AUTO_FAN_PIN, OUTPUT);
+  pinMode(LED_STRIP, OUTPUT);
   startup();
 }
 
@@ -2869,6 +2874,7 @@ inline void gcode_G4() {
     if (axis_unhomed_error(true, true, true)) { return; }
     uint8_t const z_action = code_seen('P') ? code_value_ushort() : 0;
     Nozzle::park(z_action);
+    digitalWrite(LED_STRIP, HIGH);
   }
 #endif // NOZZLE_PARK_FEATURE
 
@@ -7452,6 +7458,16 @@ void process_next_command() {
       case 87: //M87
         {
           digitalWrite(CASE_FAN, HIGH);
+        }
+        break;
+      case 88: //M88
+        {
+          digitalWrite(LED_STRIP, LOW);
+        }
+        break;
+      case 89: //M89
+        {
+          digitalWrite(LED_STRIP, HIGH);
         }
         break;
       case 92: // M92: Set the steps-per-unit for one or more axes
