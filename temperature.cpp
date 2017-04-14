@@ -54,11 +54,13 @@ Temperature thermalManager;
 // public:
 
 float Temperature::current_temperature[HOTENDS] = { 0.0 },
-      Temperature::current_temperature_bed = 0.0;
+      Temperature::current_temperature_bed = 0.0,
+      Temperature::current_temperature_case = 0.0;
 int   Temperature::current_temperature_raw[HOTENDS] = { 0 },
       Temperature::target_temperature[HOTENDS] = { 0 },
       Temperature::current_temperature_bed_raw = 0,
-      Temperature::target_temperature_bed = 0;
+      Temperature::target_temperature_bed = 0,
+      Temperature::current_temperature_case_raw = 0;
 
 #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
   float Temperature::redundant_temperature = 0.0;
@@ -157,6 +159,7 @@ volatile bool Temperature::temp_meas_ready = false;
 
 unsigned long Temperature::raw_temp_value[4] = { 0 };
 unsigned long Temperature::raw_temp_bed_value = 0;
+unsigned long Temperature::raw_temp_case_value = 0;
 
 // Init min and max temp with extreme values to prevent false errors during startup
 int Temperature::minttemp_raw[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_RAW_LO_TEMP , HEATER_1_RAW_LO_TEMP , HEATER_2_RAW_LO_TEMP, HEATER_3_RAW_LO_TEMP),
@@ -500,7 +503,8 @@ void Temperature::checkCaseFans() {
   if (current_temperature_case > CASE_TEMP) {
     digitalWrite(CASE_FAN, LOW);
   }
-  else (current_temperature_case < CASE_TEMP) {
+
+  else (current_temperature_case < CASE_TEMP); {
     digitalWrite(CASE_FAN, HIGH);
   }
 }
@@ -894,20 +898,27 @@ float Temperature::analog2tempBed(int raw) {
 }
 
 float Temperature::analog2tempCase(int raw) {
-  for (i = 1; i < BEDTEMPTABLE_LEN; i++) {
-    if (PGM_RD_W(BEDTEMPTABLE[i][0]) > raw) {
-      celsius  = PGM_RD_W(BEDTEMPTABLE[i - 1][1]) +
-                 (raw - PGM_RD_W(BEDTEMPTABLE[i - 1][0])) *
-                 (float)(PGM_RD_W(BEDTEMPTABLE[i][1]) - PGM_RD_W(BEDTEMPTABLE[i - 1][1])) /
-                 (float)(PGM_RD_W(BEDTEMPTABLE[i][0]) - PGM_RD_W(BEDTEMPTABLE[i - 1][0]));
-      break;
+
+  if (heater_ttbl_map != NULL) {
+    float celsius = 0;
+    uint8_t i;
+    short(*tt)[][2] = (short(*)[][2])(heater_ttbl_map);
+
+    for (i = 1; i < heater_ttbllen_map; i++) {
+      if (PGM_RD_W((*tt)[i][0]) > raw) {
+        celsius = PGM_RD_W((*tt)[i - 1][1]) +
+                  (raw - PGM_RD_W((*tt)[i - 1][0])) *
+                  (float)(PGM_RD_W((*tt)[i][1]) - PGM_RD_W((*tt)[i - 1][1])) /
+                  (float)(PGM_RD_W((*tt)[i][0]) - PGM_RD_W((*tt)[i - 1][0]));
+        break;
+      }
     }
+
+    // Overflow: Set to last value in the table
+    if (i == heater_ttbllen_map) celsius = PGM_RD_W((*tt)[i - 1][1]);
+
+    return celsius;
   }
-
-  // Overflow: Set to last value in the table
-  if (i == BEDTEMPTABLE_LEN) celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]);
-
-  return celsius;
 }
 
 /**
@@ -916,6 +927,7 @@ float Temperature::analog2tempCase(int raw) {
  * and this function is called from normal context
  * as it would block the stepper routine.
  */
+
 void Temperature::updateTemperaturesFromRawValues() {
   #if ENABLED(HEATER_0_USES_MAX6675)
     current_temperature_raw[0] = read_max6675();
@@ -1090,6 +1102,8 @@ void Temperature::init() {
   #if ENABLED(FILAMENT_WIDTH_SENSOR)
     ANALOG_SELECT(FILWIDTH_PIN);
   #endif
+
+  ANALOG_SELECT(TEMP_CASE);
 
   #if HAS_AUTO_FAN_0
     pinMode(EXTRUDER_0_AUTO_FAN_PIN, OUTPUT);
@@ -1395,7 +1409,7 @@ void Temperature::set_current_temp_raw() {
     #endif
   #endif
   current_temperature_bed_raw = raw_temp_bed_value;
-  current_temperature_bed_raw = raw_temp_case_value;
+  current_temperature_case_raw = raw_temp_case_value;
   temp_meas_ready = true;
 }
 
@@ -1722,12 +1736,12 @@ void Temperature::isr() {
       break;
 
     case PrepareTemp_CASE:
-      START_ADC(CASE_FAN);
+      START_ADC(TEMP_CASE);
       temp_state = MeasureTemp_CASE;
       break;
-    case MeasureTemp_CASE;
+    case MeasureTemp_CASE:
       raw_temp_case_value = ADC;
-      temp_state = Prepare_FILWIDTH
+      temp_state = Prepare_FILWIDTH;
 
     case Prepare_FILWIDTH:
       #if ENABLED(FILAMENT_WIDTH_SENSOR)

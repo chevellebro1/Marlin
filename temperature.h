@@ -179,7 +179,8 @@ class Temperature {
     #endif
 
     static unsigned long raw_temp_value[4],
-                         raw_temp_bed_value;
+                         raw_temp_bed_value,
+                         raw_temp_case_value;
 
     // Init min and max temp with extreme values to prevent false errors during startup
     static int minttemp_raw[HOTENDS],
@@ -236,6 +237,7 @@ class Temperature {
      */
     static float analog2temp(int raw, uint8_t e);
     static float analog2tempBed(int raw);
+    static float analog2tempCase(int raw);
 
     /**
      * Called from the Temperature ISR

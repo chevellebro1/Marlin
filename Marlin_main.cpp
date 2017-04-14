@@ -4537,6 +4537,10 @@ inline void gcode_M104() {
         SERIAL_CHAR(')');
       #endif
     #endif
+
+    SERIAL_PROTOCOLPGM(" C:");
+    SERIAL_PROTOCOL_F(thermalManager.degCase(), 1);
+
     #if HOTENDS > 1
       HOTEND_LOOP() {
         SERIAL_PROTOCOLPAIR(" T", e);
