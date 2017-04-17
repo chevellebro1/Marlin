@@ -499,7 +499,6 @@ int Temperature::getHeaterPower(int heater) {
 #endif // HAS_AUTO_FAN
 
 void Temperature::checkCaseFans() {
-  const int8_t casePin = CASE_FAN;
   if (current_temperature_case > CASE_TEMP) {
     digitalWrite(CASE_FAN, LOW);
   }
@@ -762,6 +761,8 @@ void Temperature::manage_heater() {
     }
   #endif
 
+  checkCaseFans();
+
   // Control the extruder rate based on the width sensor
   #if ENABLED(FILAMENT_WIDTH_SENSOR)
     if (filament_sensor) {
@@ -899,26 +900,23 @@ float Temperature::analog2tempBed(int raw) {
 
 float Temperature::analog2tempCase(int raw) {
 
-  if (heater_ttbl_map != NULL) {
-    float celsius = 0;
-    uint8_t i;
-    short(*tt)[][2] = (short(*)[][2])(heater_ttbl_map);
+  float celsius = 0;
+  byte i;
 
-    for (i = 1; i < heater_ttbllen_map; i++) {
-      if (PGM_RD_W((*tt)[i][0]) > raw) {
-        celsius = PGM_RD_W((*tt)[i - 1][1]) +
-                  (raw - PGM_RD_W((*tt)[i - 1][0])) *
-                  (float)(PGM_RD_W((*tt)[i][1]) - PGM_RD_W((*tt)[i - 1][1])) /
-                  (float)(PGM_RD_W((*tt)[i][0]) - PGM_RD_W((*tt)[i - 1][0]));
-        break;
-      }
+  for (i = 1; i < CASE_TEMPTABLE_LEN; i++) {
+    if (PGM_RD_W(CASE_TEMPTABLE[i][0]) > raw) {
+      celsius  = PGM_RD_W(CASE_TEMPTABLE[i - 1][1]) +
+                 (raw - PGM_RD_W(CASE_TEMPTABLE[i - 1][0])) *
+                 (float)(PGM_RD_W(CASE_TEMPTABLE[i][1]) - PGM_RD_W(CASE_TEMPTABLE[i - 1][1])) /
+                 (float)(PGM_RD_W(CASE_TEMPTABLE[i][0]) - PGM_RD_W(CASE_TEMPTABLE[i - 1][0]));
+      break;
     }
+  }
 
     // Overflow: Set to last value in the table
-    if (i == heater_ttbllen_map) celsius = PGM_RD_W((*tt)[i - 1][1]);
 
     return celsius;
-  }
+
 }
 
 /**
@@ -1740,7 +1738,7 @@ void Temperature::isr() {
       temp_state = MeasureTemp_CASE;
       break;
     case MeasureTemp_CASE:
-      raw_temp_case_value = ADC;
+      raw_temp_case_value += ADC;
       temp_state = Prepare_FILWIDTH;
 
     case Prepare_FILWIDTH:

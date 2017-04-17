@@ -137,7 +137,7 @@
 
 //Show Temperature ADC value
 //The M105 command return, besides traditional information, the ADC value read from temperature sensors.
-//#define SHOW_TEMP_ADC_VALUES
+#define SHOW_TEMP_ADC_VALUES
 
 /**
  * High Temperature Thermistor Support
@@ -197,7 +197,7 @@
 //#define FAN_KICKSTART_TIME 100
 
 #define CASE_TEMP 35
-#define TEMP_CASE 31
+#define TEMP_CASE 12
 
 // This defines the minimal speed for the main fan, run in PWM mode
 // to enable uncomment and set minimal PWM speed for reliable running (1-255)

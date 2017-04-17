@@ -4540,6 +4540,10 @@ inline void gcode_M104() {
 
     SERIAL_PROTOCOLPGM(" C:");
     SERIAL_PROTOCOL_F(thermalManager.degCase(), 1);
+    #if ENABLED(SHOW_TEMP_ADC_VALUES)
+      SERIAL_PROTOCOLPAIR(" (", thermalManager.current_temperature_case_raw / OVERSAMPLENR);
+      SERIAL_CHAR(')');
+    #endif
 
     #if HOTENDS > 1
       HOTEND_LOOP() {

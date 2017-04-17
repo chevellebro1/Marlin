@@ -28,7 +28,7 @@
 
 #define OVERSAMPLENR 16
 
-#define ANY_THERMISTOR_IS(n) (THERMISTORHEATER_0 == n || THERMISTORHEATER_1 == n || THERMISTORHEATER_2 == n || THERMISTORHEATER_3 == n || THERMISTORBED == n)
+#define ANY_THERMISTOR_IS(n) (THERMISTORHEATER_0 == n || THERMISTORHEATER_1 == n || THERMISTORHEATER_2 == n || THERMISTORHEATER_3 == n || THERMISTORBED == n || CASE_THERM == n)
 
 #if ANY_THERMISTOR_IS(1) // 100k bed thermistor
 const short temptable_1[][2] PROGMEM = {
@@ -1117,6 +1117,64 @@ const short temptable_70[][2] PROGMEM = {
 };
 #endif
 
+#if ANY_THERMISTOR_IS(72)
+const short temptable_72[][2] PROGMEM = {
+  {1*OVERSAMPLENR,        938},
+  {31*OVERSAMPLENR,       314},
+  {41*OVERSAMPLENR,       290},
+  {51*OVERSAMPLENR,       272},
+  {61*OVERSAMPLENR,       258},
+  {71*OVERSAMPLENR,       247},
+  {81*OVERSAMPLENR,       237},
+  {91*OVERSAMPLENR,       229},
+  {101*OVERSAMPLENR,      221},
+  {111*OVERSAMPLENR,      215},
+  {121*OVERSAMPLENR,      209},
+  {131*OVERSAMPLENR,      204},
+  {141*OVERSAMPLENR,      199},
+  {151*OVERSAMPLENR,      195},
+  {161*OVERSAMPLENR,      190},
+  {171*OVERSAMPLENR,      187},
+  {181*OVERSAMPLENR,      183},
+  {191*OVERSAMPLENR,      179},
+  {201*OVERSAMPLENR,      176},
+  {221*OVERSAMPLENR,      170},
+  {241*OVERSAMPLENR,      165},
+  {261*OVERSAMPLENR,      160},
+  {281*OVERSAMPLENR,      155},
+  {301*OVERSAMPLENR,      150},
+  {331*OVERSAMPLENR,      144},
+  {361*OVERSAMPLENR,      139},
+  {391*OVERSAMPLENR,      133},
+  {421*OVERSAMPLENR,      128},
+  {451*OVERSAMPLENR,      123},
+  {491*OVERSAMPLENR,      117},
+  {531*OVERSAMPLENR,      111},
+  {571*OVERSAMPLENR,      105},
+  {611*OVERSAMPLENR,      100},
+  {641*OVERSAMPLENR,      95},
+  {681*OVERSAMPLENR,      90},
+  {711*OVERSAMPLENR,      85},
+  {751*OVERSAMPLENR,      79},
+  {791*OVERSAMPLENR,      72},
+  {811*OVERSAMPLENR,      69},
+  {831*OVERSAMPLENR,      65},
+  {871*OVERSAMPLENR,      57},
+  {881*OVERSAMPLENR,      55},
+  {901*OVERSAMPLENR,      51},
+  {921*OVERSAMPLENR,      45},
+  {941*OVERSAMPLENR,      39},
+  {971*OVERSAMPLENR,      28},
+  {981*OVERSAMPLENR,      23},
+  {991*OVERSAMPLENR,      17},
+  {1001*OVERSAMPLENR,     9},
+  {1021*OVERSAMPLENR,     -27}
+};
+#endif
+
+
+
+
 // Pt1000 and Pt100 handling
 //
 // Rt=R0*(1+a*T+b*T*T) [for T>0]
@@ -1220,6 +1278,11 @@ const short temptable_1047[][2] PROGMEM = {
   #endif // HEATER_0_USES_THERMISTOR
 #endif
 
+#ifdef CASE_THERM
+  #define CASE_TEMPTABLE TT_NAME(CASE_THERM)
+  #define CASE_TEMPTABLE_LEN COUNT(CASE_TEMPTABLE)
+#endif
+
 // Set the high and low raw values for the heater, this indicates which raw value is a high or low temperature
 #ifndef HEATER_0_RAW_HI_TEMP
   #ifdef HEATER_0_USES_THERMISTOR // In case of a thermistor the highest temperature results in the lowest ADC value
@@ -1308,6 +1371,8 @@ const short temptable_1047[][2] PROGMEM = {
     #error "No bed thermistor table specified"
   #endif // BED_USES_THERMISTOR
 #endif
+
+
 
 // Set the high and low raw values for the heater, this indicates which raw value is a high or low temperature
 #ifndef HEATER_BED_RAW_HI_TEMP
