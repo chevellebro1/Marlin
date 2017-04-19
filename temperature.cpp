@@ -914,6 +914,7 @@ float Temperature::analog2tempCase(int raw) {
   }
 
     // Overflow: Set to last value in the table
+    if (i == CASETEMPTABLE_LEN) celsius = PGM_RD_W(CASETEMPTABLE[i - 1][1]);
 
     return celsius;
 
