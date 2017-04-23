@@ -4991,7 +4991,6 @@ inline void gcode_M111() {
 inline void gcode_M140() {
   if (DEBUGGING(DRYRUN)) return;
   if (code_seen('S')) thermalManager.setTargetBed(code_value_temp_abs());
-  digitalWrite(CASE_FAN, LOW);
 }
 
 #if ENABLED(ULTIPANEL)
