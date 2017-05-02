@@ -900,15 +900,16 @@ float Temperature::analog2tempBed(int raw) {
 
 float Temperature::analog2tempCase(int raw) {
 
+  #define THERMISTORNOMINAL 10000
+  #define TEMPERATURENOMINAL 25
+  #define BCOEFFICIENT 3950
   float celsius = 0;
+  float reading = 0;
   byte i;
 
-  for (i = 1; i < CASE_TEMPTABLE_LEN; i++) {
+  for (i = 0; i < CASE_TEMPTABLE_LEN; i++) {
     if (PGM_RD_W(CASE_TEMPTABLE[i][0]) > raw) {
-      celsius  = PGM_RD_W(CASE_TEMPTABLE[i - 1][1]) +
-                 (raw - PGM_RD_W(CASE_TEMPTABLE[i - 1][0])) *
-                 (float)(PGM_RD_W(CASE_TEMPTABLE[i][1]) - PGM_RD_W(CASE_TEMPTABLE[i - 1][1])) /
-                 (float)(PGM_RD_W(CASE_TEMPTABLE[i][0]) - PGM_RD_W(CASE_TEMPTABLE[i - 1][0]));
+      celsius  = analogRead(TEMP_CASE);
       break;
     }
   }
@@ -917,6 +918,21 @@ float Temperature::analog2tempCase(int raw) {
     if (i == CASE_TEMPTABLE_LEN) celsius = PGM_RD_W(CASE_TEMPTABLE[i - 1][1]);
 
     return celsius;
+
+    celsius = reading;
+
+  float steinhart;
+
+  steinhart = reading / THERMISTORNOMINAL;     // (R/Ro)
+  steinhart = log(steinhart);                  // ln(R/Ro)
+  steinhart /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
+  steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
+  steinhart = 1.0 / steinhart;                 // Invert
+  steinhart -= 273.15;                         // convert to C
+
+  steinhart = celsius;
+
+  return celsius;
 
 }
 
