@@ -197,7 +197,7 @@
 //#define FAN_KICKSTART_TIME 100
 
 #define CASE_TEMP 35
-#define TEMP_CASE 12
+#define TEMP_CASE A11
 
 // This defines the minimal speed for the main fan, run in PWM mode
 // to enable uncomment and set minimal PWM speed for reliable running (1-255)
