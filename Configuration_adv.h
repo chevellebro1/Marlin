@@ -215,6 +215,10 @@
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 70
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
+
+#define CASE_AUTO_TEMP 35
+#define CASE_TEMP_PIN 11
+
 //===========================================================================
 //============================ Mechanical Settings ==========================
 //===========================================================================

@@ -55,7 +55,9 @@ class Temperature {
   public:
 
     static float current_temperature[HOTENDS],
-                 current_temperature_bed;
+                 current_temperature_bed,
+                 steinhart,
+                 current_case;
     static int   current_temperature_raw[HOTENDS],
                  target_temperature[HOTENDS],
                  current_temperature_bed_raw,
@@ -234,6 +236,7 @@ class Temperature {
      */
     static float analog2temp(int raw, uint8_t e);
     static float analog2tempBed(int raw);
+    static float analog2tempCase();
 
     /**
      * Called from the Temperature ISR
@@ -287,7 +290,9 @@ class Temperature {
       #endif
       return current_temperature[HOTEND_INDEX];
     }
+
     static float degBed() { return current_temperature_bed; }
+    static float degCase() { return current_case; }
 
     #if ENABLED(SHOW_TEMP_ADC_VALUES)
     static float rawHotendTemp(uint8_t e) {

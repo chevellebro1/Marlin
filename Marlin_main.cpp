@@ -4556,6 +4556,10 @@ inline void gcode_M104() {
         #endif
       }
     #endif
+    SERIAL_PROTOCOLPGM(" C:");
+    SERIAL_PROTOCOL_F(thermalManager.degCase(), 1);
+
+
     SERIAL_PROTOCOLPGM(" @:");
     SERIAL_PROTOCOL(thermalManager.getHeaterPower(target_extruder));
     #if HAS_TEMP_BED
